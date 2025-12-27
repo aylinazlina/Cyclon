@@ -1,0 +1,44 @@
+//todo:model schema bananor jonno jemon mongoose temone validation schema bananor jonno joi
+
+//todo:website joi.dev
+const Joi=require('joi');
+const {customError} = require('../utils/customError')
+
+
+const userValidationSchema = Joi.object({
+    firstName:Joi.string().trim().required().empty().messages({
+        "string.empty":"Name is required",
+        "any.required":"Name is required",
+        "name.trim":"Name fill with extra space",
+    }),
+    email:Joi.string().trim().email().empty().messages({
+        "string.empty":"Email is required",
+        "any.required":"Email is required",
+        "string.trim":"Email should not contain extra spaces",
+        "string.pattern.base":"Email format is invalid",
+
+    }),
+    password:Joi.string().trim().min(8).pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$')).required().messages({
+        "string.empty":"Password is required",
+        'any.required':"Password is required",
+        "string.min":"Password must be at least 8 characters long,include at least one number and one special character (@,$,!,%,*,?,&)",
+        "string.pattern.base":"Pasword must be at least 8-16 long,include at least one number and one special character."
+    })
+
+}).optional({
+    abortEarly:false,//ekadhik error thakle sob gulo error return korbe
+    allowUnknown:true,//this allow extra fields in req.body without validation
+});
+
+
+const validateUser = async(req)=>{
+    try{
+       const validatedData=await userValidationSchema.validateAsync(req.body); 
+       return validatedData;
+    }catch(err){
+        console.log("error form validation",err);
+        throw new customError(400,`user validation failed ${err}`);
+    }
+}
+
+module.exports={validateUser}

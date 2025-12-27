@@ -6,6 +6,10 @@ const app=express()
 const cors=require("cors"); 
 const cookieParser = require('cookie-parser') ;
 
+
+
+
+
 module.exports={app}
 
 
@@ -27,7 +31,7 @@ app.use(express.static('public'));//todo:serves static files from public folder
  */
 
 const apiVersion=process.env.BASE_URL
-app.use(`/api/v1`,require('./routes/api'))
+app.use(`/api/v1`,require('./routes/index'));
 
 
 
@@ -35,8 +39,5 @@ app.use(`/api/v1`,require('./routes/api'))
 /**
  * todo:All error handling middlewares will be here
  */
-
-app.use((err,req,res,next)=>{
-
-    console.log("error handling middleware called",err.message)
-})
+const { globalErrorHandeler } = require("./utils/globalErrorhandeler");
+app.use(globalErrorHandeler);

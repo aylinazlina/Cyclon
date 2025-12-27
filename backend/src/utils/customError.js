@@ -12,4 +12,4 @@ class customError extends Error{
 
 
 
-module.exports={customError};
+module.exports = {customError};
