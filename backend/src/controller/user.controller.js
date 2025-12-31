@@ -18,7 +18,7 @@ exports.registration=asynchandeler(async(req,res)=>{
    if(!user){
     throw new customError(500,"user registration failed Try again later");
    }
-   apiResponse.sendSuccessResponse(res,201,"Registration Successfull",user);
+   apiResponse.sendSuccess(res,201,"Registration Successfull",user);
 
 
 

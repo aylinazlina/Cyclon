@@ -2,6 +2,8 @@ const mongoose=require("mongoose");
 const {Schema,Types}=mongoose;
 const bcrypt=require('bcrypt');
 
+const { customError } = require('../utils/customError');
+
 const userSchema=new Schema({
 
 

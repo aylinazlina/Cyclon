@@ -14,4 +14,4 @@ class apiResponse{
 }
 
 
-module.exports = { apiResponse }
+module.exports = {apiResponse};
