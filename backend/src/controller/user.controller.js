@@ -1,4 +1,4 @@
-const User = require('../models/user.model');
+const UserModel = require('../models/user.model');
 const {apiResponse} = require('../utils/apiResponse');
 const {customError} = require('../utils/customError');
 const {asynchandeler} = require('../utils/asynchandeler');
@@ -14,7 +14,7 @@ exports.registration=asynchandeler(async(req,res)=>{
    const {firstName,email,password}=validatedData;
    
    //todo:save the user inofo into database
-    const user=await new User({
+    const user=await new UserModel({
     firstName,
     email,
     password
@@ -36,3 +36,34 @@ exports.registration=asynchandeler(async(req,res)=>{
 
 
 })
+
+
+//todo:login
+exports.login=asynchandeler(async(req,res)=>{
+   const validatedData=await validateUser(req);
+   const {email,phoneNumber,password}=validatedData;
+   //todo: Find the user
+   const user = await UserModel.findOne({$or:[{email:email},{phoneNumber:phoneNumber}]});
+   const isPasswordMatch = await user.compareHashPassword(password);
+
+   //todo:check if user exsists and password matches
+   if(!user || !isPasswordMatch){
+      throw new customError(400,"Your Password or email does not match");
+
+   }
+   // console.log(isPasswordMatch);
+
+   //todo:make an access and refresh token
+   const accessToken=await user.generateAccessToken();
+   const refreshToken=await user.generateRefreshToken();
+    console.log(accessToken,refreshToken);
+   //todo:Send success response
+   return apiResponse.sendSuccess(res, 200, "Login Successful", {
+        user: { firstName: user.firstName, email: user.email },
+        accessToken,
+        refreshToken
+    });
+  
+
+
+});

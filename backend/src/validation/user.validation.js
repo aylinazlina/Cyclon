@@ -6,10 +6,16 @@ const {customError} = require('../utils/customError')
 
 
 const userValidationSchema = Joi.object({
-    firstName:Joi.string().trim().required().empty().messages({
-        "string.empty":"Name is required",
+    firstName:Joi.string().trim().empty().messages({
+        
         "any.required":"Name is required",
         "name.trim":"Name fill with extra space",
+    }),
+    phoneNumber:Joi.string().optional().trim().pattern(new RegExp('^(?:\\+88|0088)?01[3-9]\\d{8}$')).messages({
+        "string.pattern.base":"Phone number format is invaid",
+        "string.trim":"Phone number should not contain extra spaces",
+        "string.empty":"Phone number cannot be empty",
+        
     }),
     email:Joi.string().trim().email().empty().messages({
         "string.empty":"Email is required",

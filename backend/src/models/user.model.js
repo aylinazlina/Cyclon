@@ -27,6 +27,9 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
+  phoneNumber:{
+    type:Number,
+  },
   password: {
     type: String,
     required: true,
@@ -140,27 +143,32 @@ userSchema.pre("save", async function (next) {
 
 //todo:generate accessToken method
 
-userSchema.method.generateAccessToken = async function () {
-  const accessToken = jwt.sign(
+userSchema.methods.generateAccessToken = function() {
+   return jwt.sign(
     {
       userId: this._id,
       email: this.email,
       role: this.role,
     },
     process.env.ACCESSTOKEN_SECRET,
-    process.env.ACCESSTOKEN_EXPIRE
+    {expiresIn: process.env.ACCESSTOKEN_EXPIRE}
   );
+};
+
+// Load hash from your password DB.
+userSchema.methods.compareHashPassword = async function(humanPass) {
+  return await bcrypt.compare(humanPass,this.password);
 };
 
 //todo:generate refreshToken method
 
-userSchema.method.generateRefreshToken = async function () {
+userSchema.methods.generateRefreshToken = function() {
   return jwt.sign(
     {
       userId: this._id,
     },
     process.env.REFRESHTOKEN_SECRET,
-    process.env.REFRESHTOKEN_EXPIRE
+    {expiresIn: process.env.REFRESHTOKEN_EXPIRE}
   );
 };
 

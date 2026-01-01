@@ -6,7 +6,7 @@ class customError extends Error{
        this.status=statusCode >=200 && statusCode <500 ? "Client Error":"Server Error";
        this.message=message || "Server / Client Error";
        this.data =null;
-       this.captureStackTrace(this,customError)
+       Error.captureStackTrace(this,customError)
     }
 }
 
