@@ -1,4 +1,4 @@
-exports.RegistrationTemplate=(firstName,verificationLink)=>{
+exports.RegistrationTemplate=(firstName,verificationLink,otp,expireTime)=>{
     return `
 
     <!DOCTYPE html>
@@ -26,7 +26,13 @@ exports.RegistrationTemplate=(firstName,verificationLink)=>{
             <td style="padding:30px; color:#333333;">
               <p style="font-size:16px; margin:0 0 15px 0;">
                 Hi ${firstName},
-              </p>
+              </p></br> </br>
+
+
+
+              <p> Your OTP is: ${otp},</p> </br> </br>
+
+              <p>this otp will expire within : ${expireTime},</p> </br> </br>
 
               <p style="font-size:15px; line-height:1.6; margin:0 0 20px 0;">
                 Thank you for registering with <strong>Cyclon</strong>!  
