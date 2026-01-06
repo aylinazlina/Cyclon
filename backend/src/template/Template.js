@@ -79,3 +79,130 @@ exports.RegistrationTemplate=(firstName,verificationLink,otp,expireTime)=>{
 
     `
 }
+
+
+//todo:reset password email template
+
+exports.ResetPasswordEmailTemplate = (firstName, verifyLink, otp, expireTime) => {
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7fc;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background-color: #4f46e5;
+        padding: 20px;
+        text-align: center;
+        color: white;
+      }
+
+      .content {
+        padding: 30px;
+        color: #333333;
+        line-height: 1.6;
+      }
+
+      .otp-box {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #eef2ff;
+        text-align: center;
+        font-size: 24px;
+        letter-spacing: 3px;
+        font-weight: bold;
+        border-radius: 8px;
+        color: #4f46e5;
+      }
+
+      .button {
+        display: block;
+        width: fit-content;
+        margin: 25px auto;
+        padding: 12px 25px;
+        background-color: #4f46e5;
+        color: white !important;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .footer {
+        padding: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #777777;
+        background-color: #f4f7fc;
+      }
+
+      .expire {
+        font-size: 14px;
+        text-align: center;
+        color: #555555;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Password Reset Request</h2>
+      </div>
+
+      <div class="content">
+        <p>Hello <strong>${firstName}</strong>,</p>
+
+        <p>
+          We received a request to reset your password. Use the OTP below to
+          proceed with resetting your account password.
+        </p>
+
+        <div class="otp-box">Your OTP is :${otp}</div>
+
+        <p class="expire">
+          This OTP will expire in <strong>${expireTime}</strong>.
+        </p>
+
+        <p>
+          Or you can directly reset your password using the link below:
+        </p>
+
+        <a href="${verifyLink}" class="button">Reset Password</a>
+
+        <p>
+          If you did not request this, please ignore this email. Your account is
+          safe.
+        </p>
+
+        <p>Thank you,<br />Support Team</p>
+      </div>
+
+      <div class="footer">
+        <p>
+          This email was sent automatically. Please do not reply to this
+          message.
+        </p>
+        <p>© 2026 Your Company. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+};

@@ -114,7 +114,7 @@ const userSchema = new Schema({
     ref: "Product",
   },
   newsletterSubscribe: Boolean,
-  resetPasswordOTP: Number,
+  resetPasswordOTP: String,
   resetPasswordExpireTime: Date,
   twoFactorEnabled: Boolean,
   isBlocked: Boolean,
