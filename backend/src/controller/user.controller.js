@@ -20,29 +20,29 @@ exports.registration=asynchandeler(async(req,res)=>{
    const {firstName,email,password}=validatedData;
    
    //todo:save the user inofo into database
-    const user=await new UserModel({
+    const finduser=await new UserModel({
     firstName,
     email,
     password
    }).save();
    
 
-   if(!user){
+   if(!finduser){
     throw new customError(500,"user registration failed Try again later");
    }
 
    //todo:random OTP generate
    const otp= crypto.randomInt(100000,999999) ;
    //todo:otp saving in the database
-   user.resetPasswordOTP = otp;
+   finduser.resetPasswordOTP = otp;
    console.log(otp);
    const expireTime=Date.now() + 10 * 60 * 60 * 1000;
    const verifyLink=`https://form.com/verify-email/${email}`;
    const template =RegistrationTemplate(firstName,verifyLink,otp,expireTime);
    await emailSend(email,template);
-   user.resetPasswordExpireTime = expireTime;
+   finduser.resetPasswordExpireTime = expireTime;
    //todo:saving otp and expire time to database
-   await user.save()
+   await finduser.save()
    
    apiResponse.sendSuccess(res,201,"Registration Successfull",{
       // todo:postman e jeno shudhu firstName are email ta dekhai
@@ -59,19 +59,19 @@ exports.login=asynchandeler(async(req,res)=>{
    const validatedData=await validateUser(req);
    const {email,phoneNumber,password}=validatedData;
    //todo: Find the user
-   const user = await UserModel.findOne({$or:[{email:email},{phoneNumber:phoneNumber}]});
-   const isPasswordMatch = await user.compareHashPassword(password);
+   const finduser = await UserModel.findOne({$or:[{email:email},{phoneNumber:phoneNumber}]});
+   const isPasswordMatch = await finduser.compareHashPassword(password);
 
    //todo:check if user exsists and password matches
-   if(!user || !isPasswordMatch){
+   if(!finduser || !isPasswordMatch){
       throw new customError(400,"Your Password or email does not match");
 
    }
    // console.log(isPasswordMatch);
 
    //todo:make an access and refresh token
-   const accessToken=await user.generateAccessToken();
-   const refreshToken=await user.generateRefreshToken();
+   const accessToken=await finduser.generateAccessToken();
+   const refreshToken=await finduser.generateRefreshToken();
 
    const isProduction=process.env.NODE_ENV == "production";
    
@@ -85,9 +85,16 @@ exports.login=asynchandeler(async(req,res)=>{
    });
 
     console.log(accessToken,refreshToken);
+
+    //todo:now save refresh token into database
+
+
+   finduser.refreshToken=refreshToken;
+   await finduser.save();
+
    //todo:Send success response
    return apiResponse.sendSuccess(res, 200, "Login Successful", {
-        user: { firstName: user.firstName, email: user.email },
+        user: { firstName: finduser.firstName, email: finduser.email },
         accessToken,
         refreshToken
     });
@@ -136,9 +143,9 @@ exports.forgetPassword=asynchandeler(async(req,res)=>{
   if(!email){
    throw new customError(401,"eamil missing");
   }
- const user=await UserModel.findOne({email:email});
+ const finduser=await UserModel.findOne({email:email});
 
- if(!user){
+ if(!finduser){
    throw new customError(401,"user not found");
  }
 
@@ -156,7 +163,7 @@ exports.forgetPassword=asynchandeler(async(req,res)=>{
 })
 
 
-//reset password
+//todo:reset password
 
 exports.resetPassword=asynchandeler(async(req,res)=>{
    const {email,newPassword,confirmPassword}=req.body;
@@ -175,18 +182,40 @@ exports.resetPassword=asynchandeler(async(req,res)=>{
 
    //todo: find the user
 
-   const user= await UserModel.findOne({email});
-   if(!user){
+   const finduser= await UserModel.findOne({email});
+   if(!finduser){
       throw new customError(401,"user not found ");
    }
 
-   user.password == newPassword;
-   user.resetPasswordOTP  = null;
-   user.resetPasswordExpireTime = null;
-   await user.save();
+   finduser.password == newPassword;
+   finduser.resetPasswordOTP  = null;
+   finduser.resetPasswordExpireTime = null;
+
+   await finduser.save();
    
-   apiResponse.sendSuccess(res,200,"password reset successfull",user);
+   apiResponse.sendSuccess(res,200,"password reset successfull",finduser);
 
 
 
 })
+
+//todo:logout user
+exports.logoutuser=asynchandeler(async(req,res)=>{
+
+   const findUser=UserModel.findById(req.user.email);
+
+
+  console.log(req.user);
+
+//   if(!refreshToken){
+//    throw new customError(401,"refresh token missing");
+//   }
+
+  //todo:clear the cookies
+
+
+
+
+})
+
+
