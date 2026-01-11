@@ -202,20 +202,46 @@ exports.resetPassword=asynchandeler(async(req,res)=>{
 //todo:logout user
 exports.logoutuser=asynchandeler(async(req,res)=>{
 
-   const findUser=UserModel.findById(req.user.email);
-
-
-  console.log(req.user);
+   const findUser=await UserModel.findById(req.user.email);
+   console.log(req.user);
+   if(!findUser){
+      throw new customError(401,"User not found");
+   }
 
 //   if(!refreshToken){
 //    throw new customError(401,"refresh token missing");
 //   }
 
   //todo:clear the cookies
+  res.clearCookie("refreshToken" , {
+   httpOnly: true,
+   secure:isProduction ? true : false,
+   samSite: "none" ,
+   path: "/", //This must match the path used when setting the cookie
+  }) ;
+
+  //todo:find the user
+  findUser.refreshToken = null ;
+  await findUser.save() ;
+  apiResponse.sendSuccess(res,200,"Logout Successfull", findUser);
 
 
+
+
+});
+
+
+//todo:get me controller
+
+exports.getMe=asynchandeler(async(req,res)=>{
+
+    const id=req.user.id;
+    const findUser=await UserModel.findById(id);
+    if(!findUser){
+      throw new cutomError(401,"User not found");
+    }
+
+   apiResponse.sendSuccess(res,200,"User found successfully",findUser);
 
 
 })
-
-

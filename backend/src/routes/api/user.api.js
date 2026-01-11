@@ -10,6 +10,8 @@ _.route('/verify-email').post(authController.emailVerification);
 _.route('/forget-password').post(authController.forgetPassword);
 _.route('/reset-password').post(authController.resetPassword);
 _.route('/logout').post(authGuard,authController.logoutuser);
+_.route('/getme').get(authGuard,authController.getMe);
+
 
 module.exports = _;
 

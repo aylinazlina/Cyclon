@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const UserModel=require('../models/user.model')
 
 exports.authGuard = async (req,_,next)=>{
-    const token = req.headers.authorization || req.body.token;
+    const token = req.headers.authorization || req.body ?.token;
     if(token){
       const decodedToken= jwt.verify(token,process.env.ACCESSTOKEN_SECRET);
       console.log(decodedToken);
