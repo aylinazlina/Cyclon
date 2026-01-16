@@ -245,3 +245,35 @@ exports.getMe=asynchandeler(async(req,res)=>{
 
 
 })
+
+
+//todo:get refresh token
+exports.getrefreshToken = asynchandeler(async (req, res) => {
+    // 1. Get the token and clean it up
+    // .trim() is important because your .replace("...", " ") adds a space
+    const token = req.headers.cookie?.replace("refreshToken=", "").trim();
+
+    if (!token) {
+        throw new customError(401, "Token not found!");
+    }
+
+    // 2. Find the user
+    const findUser = await UserModel.findOne({ refreshToken: token });
+
+    // 3. Validation Check (The missing piece)
+    if (!findUser) {
+        throw new customError(403, "Invalid refresh token or user not found.");
+    }
+
+    // 4. Generate the new token
+    const accessToken = findUser.generateAccessToken();
+
+    apiResponse.sendSuccess(res, 200, "Access token refreshed successfully.", {
+        accessToken: accessToken,
+        userName: findUser.firstName,
+        email: findUser.email,
+    });
+});
+
+
+

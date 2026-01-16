@@ -11,6 +11,7 @@ _.route('/forget-password').post(authController.forgetPassword);
 _.route('/reset-password').post(authController.resetPassword);
 _.route('/logout').post(authGuard,authController.logoutuser);
 _.route('/getme').get(authGuard,authController.getMe);
+_.route('/refresh-token').post(authController.getrefreshToken);
 
 
 module.exports = _;
