@@ -17,12 +17,19 @@ const crypto = require('crypto');
 exports.registration=asynchandeler(async(req,res)=>{
 
    const validatedData=await validateUser(req);
-   const {firstName,email,password}=validatedData;
+   const {firstName,email,phoneNumber,password}=validatedData;
+   if(email == undefined &&  phoneNumber == undefined){
+      throw new customError(401,"email/phoneNumber required!!");
+   }
+
+   console.log(email);
+  
    
    //todo:save the user inofo into database
     const finduser=await new UserModel({
     firstName,
-    email,
+    email: email || null,
+    phoneNumber: phoneNumber || null,
     password
    }).save();
    
@@ -37,9 +44,18 @@ exports.registration=asynchandeler(async(req,res)=>{
    finduser.resetPasswordOTP = otp;
    console.log(otp);
    const expireTime=Date.now() + 10 * 60 * 60 * 1000;
+   if(user.email){
+
    const verifyLink=`https://form.com/verify-email/${email}`;
    const template =RegistrationTemplate(firstName,verifyLink,otp,expireTime);
    await emailSend(email,template);
+
+   }
+
+   if(user.phoneNumber){
+    const  verifyLink =`https://form.com/verify/${phoneNumber}`;
+   }
+
    finduser.resetPasswordExpireTime = expireTime;
    //todo:saving otp and expire time to database
    await finduser.save()
