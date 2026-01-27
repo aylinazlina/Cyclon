@@ -38,7 +38,7 @@ exports.registration = asynchandeler(async (req, res) => {
   finduser.resetPasswordOTP = otp;
   console.log(otp);
   const expireTime = Date.now() + 10 * 60 * 60 * 1000;
-  if (user.email) {
+  if (finduser.email) {
     const verifyLink = `https://form.com/verify-email/${email}`;
     const template = RegistrationTemplate(
       firstName,
@@ -51,7 +51,7 @@ exports.registration = asynchandeler(async (req, res) => {
 
   //phone
 
-  if (user.phoneNumber) {
+  if (finduser.phoneNumber) {
     const verifyLink = `https://form.com/verify/${phoneNumber}`;
     const smsbody = `hi ${user.firstName},complete your registration here: ${verifyLink}
     This link will expre in [X hours/days].`;
@@ -81,6 +81,22 @@ exports.login = asynchandeler(async (req, res) => {
   const finduser = await UserModel.findOne({
     $or: [{ email: email }, { phoneNumber: phoneNumber }],
   });
+
+
+  if(!finduser.isEmailVerified && ! finduser.isPhoneVerified){
+     if (finduser.email) {
+    const verifyLink = `https://form.com/verify-email/${email}`;
+    const template = RegistrationTemplate(
+      firstName,
+      verifyLink,
+      otp,
+      expireTime,
+    );
+    await emailSend(email, template);
+     return res.status(301).redirect(verifyLink);
+  }
+  }
+
   const isPasswordMatch = await finduser.compareHashPassword(password);
 
   //todo:check if user exsists and password matches
@@ -88,6 +104,10 @@ exports.login = asynchandeler(async (req, res) => {
     throw new customError(400, "Your Password or email does not match");
   }
   // console.log(isPasswordMatch);
+
+
+  
+
 
   //todo:make an access and refresh token
   const accessToken = await finduser.generateAccessToken();

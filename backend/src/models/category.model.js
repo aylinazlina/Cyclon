@@ -45,18 +45,14 @@ const categorySchema= new Schema({
 
 
 //todo:make a slug
-categorySchema.pre("save",async function(next){
-    if(this.isModified("name") && this.isNew("name")){
-        
- await  slugify(this.name, {
-  replacement: '-',  
-  remove: undefined, 
-  lower: false,      
-  strict: false,     
-
-});
-    this.slug = slug;
-    };
+// ✅ CORRECT: Use a regular function
+categorySchema.pre('save', async function (next) {
+    // Now 'this' refers to the document
+    if (this.isModified('name') || this.isNew) {
+        // Example: automatically generate slug if you haven't already
+        this.slug = this.name.toLowerCase().split(' ').join('-');
+    }
+    
 });
 
 
@@ -68,8 +64,6 @@ categorySchema.pre("save" , async function (next){
     throw new customError(400, "User already Exsist try another email !");
 } 
 
-
- next();
 });
 
 module.exports= mongoose.model("Category",categorySchema);
