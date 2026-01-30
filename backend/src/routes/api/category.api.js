@@ -11,4 +11,16 @@ _.route('/create-category').post(upload.fields([{
 }]),multerError,categoryController.createCategory);
 
 
+_.route('/update-category/:slug').post(upload.fields([{
+    name:"image" ,maxCount:1
+}]),multerError,categoryController.updateCategory);
+
+
+
+_.route('/get-all-category').get(categoryController.getAllCategory);
+_.route('/single-category/:slug').get(categoryController.singleCategory);
+_.route('/delete-category/:slug').delete(categoryController.deleteCategory);
+
+
+
 module.exports = _;

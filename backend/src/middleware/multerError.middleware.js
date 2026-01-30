@@ -7,7 +7,7 @@ exports.multerError =(error,req,res,next)=>{
         //Send a proper response
         return res.status(400).json({
             success:false,
-            message:err.message || "Multer error occurred",
+            message:error.message || "Multer error occurred",
         });
         throw new cutomError(401,error.message);
     }

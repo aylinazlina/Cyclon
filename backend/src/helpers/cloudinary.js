@@ -12,11 +12,9 @@ cloudinary.config({
 
 //todo:upload image into cloudinary
 exports.uploadCloudinaryFile = async (filePath) => {
-    console.log("Attempting to upload path:", filePath); // DEBUG THIS
     try {
-        // Fix: Check if filePath is missing OR if the file doesn't exist on disk
         if (!filePath || !fs.existsSync(filePath)) {
-            throw new customError(400, "File path is invalid or file does not exist");
+            return null; 
         }
 
         const response = await cloudinary.uploader.upload(filePath, {
@@ -24,26 +22,41 @@ exports.uploadCloudinaryFile = async (filePath) => {
             quality: "auto",
         });
 
-        if(response){
-             // Clean up: Delete the local temp file after upload
+        if (response) {
             fs.unlinkSync(filePath);
-            return {publicIP : response.public_id ,url :response.secure_url}
+            // Match what your controller expects: secure_url
+            return { 
+                public_id: response.public_id, 
+                secure_url: response.secure_url 
+            };
         }
-       
-        
-
-        return response; // You MUST return this to get the URL in your controller
+        return null;
     } catch (error) {
-        
-        if(fs.existsSync(filePath)){
-             // Clean up: Delete the local temp file after upload
+        // Clean up the file if it exists
+        if (filePath && fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
-            return {publicIP : response.public_id ,url :response.secure_url}
         }
-
-        // Clean up temp file even if upload fails
-        // if (filePath && fs.existsSync(filePath)) fs.unlinkSync(filePath);
         
-        throw new customError(500, "Cloudinary Upload Failed: " + error.message);
+        // Log the ACTUAL error to your console so you can see why Cloudinary rejected it
+        console.error("Cloudinary SDK Error:", error.message);
+        
+        return null; // Return null so the controller can handle the error properly
     }
-}
+};
+
+//todo:delete cloudinary image
+exports.deleteCloudinaryFile = async (public_id) => {
+    try {
+        if (!public_id) return null;
+
+        // destroy only takes public_id and a few specific options (like resource_type)
+        const response = await cloudinary.uploader.destroy(public_id, {
+            resource_type: "image"
+        });
+        
+        return response;
+    } catch (error) {
+        console.error("Error deleting from Cloudinary:", error.message);
+        return null; // Don't throw a customError here, handle the null in controller if needed
+    }
+};

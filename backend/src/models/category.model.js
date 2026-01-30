@@ -10,11 +10,16 @@ const categorySchema= new Schema({
         required:true,
 
     },
-    image:{
-        type:String,
-        trim:true,
-        required:true,
+   image: {
+    public_id: {
+      type: String,
+      required: true
     },
+    secure_url: {
+      type: String,
+      required: true
+    }
+  },
     slug:{
         type:String,
         required:true,
@@ -36,8 +41,6 @@ const categorySchema= new Schema({
     type:Types.ObjectId,
     ref: "Discount",
    }]
-
-
 
 },{
     timestamps:true,
